@@ -10,7 +10,6 @@ func NewLinkMeowCutter() *LinkMeowCutter {
 	return &LinkMeowCutter{}
 }
 
-// Cut реализует domain.LinkCutter.
 func (c *LinkMeowCutter) Cut(originalURL string) (string, error) {
 	return utils.GenerateShortID()
 }

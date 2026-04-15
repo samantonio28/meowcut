@@ -30,8 +30,7 @@ func (r *nativeLinkRepo) Save(link domain.Link) error {
 		return domain.ErrDuplicate
 	}
 
-	// Создаём копию link, чтобы избежать мутаций
-	stored := link
+	stored := link // copy
 	r.byShortID[link.ShortID] = &stored
 	r.byOriginalURL[link.OriginalURL] = &stored
 	return nil

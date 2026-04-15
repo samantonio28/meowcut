@@ -1,4 +1,14 @@
-host: 0.0.0.0
-port: 8080
-log_file: logs/access.log
-storage_type: native  # или pg
+server:
+  host: 0.0.0.0
+  port: 8080
+  log_file: logs/access.log
+
+database:
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgres
+  dbname: meowcut
+  sslmode: disable
+
+storage_type: native

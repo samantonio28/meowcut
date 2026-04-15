@@ -6,12 +6,17 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: meowcut
     ports:
-      - "5432:5432"
+      - "5455:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
     networks:
       - meowcut-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   meowcut:
     build: .
@@ -21,7 +26,8 @@ services:
       STORAGE_TYPE: pg
       CONFIG_PATH: /root/configs/server.yaml
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - ./logs:/root/logs
     networks:

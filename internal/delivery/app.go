@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/gorilla/mux"
 	"github.com/samantonio28/meowcut/internal/api"
 	"github.com/samantonio28/meowcut/internal/domain"

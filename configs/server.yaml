@@ -11,4 +11,5 @@ database:
   dbname: meowcut
   sslmode: disable
 
-storage_type: native # pg | native
+# pg | native
+storage_type: native

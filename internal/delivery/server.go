@@ -51,7 +51,10 @@ func (s *server) PostShorten(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		s.logger.Error("failed to encode response", zap.Error(err))
+	}
 }
 
 func (s *server) GetShortId(w http.ResponseWriter, r *http.Request, shortId string) {
@@ -74,11 +77,14 @@ func (s *server) GetShortId(w http.ResponseWriter, r *http.Request, shortId stri
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	err = json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		s.logger.Error("failed to encode response", zap.Error(err))
+	}
 }
 
 func writeError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(api.Error{Message: message})
+	_ = json.NewEncoder(w).Encode(api.Error{Message: message})
 }

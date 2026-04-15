@@ -1,4 +1,4 @@
-.PHONY: all test-usecase test-service
+.PHONY: all usecase service lint
 
 all: usecase service
 
@@ -7,3 +7,6 @@ usecase:
 
 service:
 	go test ./internal/service -v
+
+lint:
+	golangci-lint run ./...

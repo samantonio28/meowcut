@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 
-	_ "github.com/lib/pq"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"github.com/samantonio28/meowcut/internal/api"
 	"github.com/samantonio28/meowcut/internal/domain"
 	"github.com/samantonio28/meowcut/internal/service"
@@ -24,8 +25,9 @@ type App struct {
 
 type Config struct {
 	Server struct {
-		Host string `yaml:"host"`
-		Port int    `yaml:"port"`
+		Host    string `yaml:"host"`
+		Port    int    `yaml:"port"`
+		LogFile string `yaml:"log_file"`
 	} `yaml:"server"`
 	Database struct {
 		Host     string `yaml:"host"`
@@ -47,9 +49,20 @@ func NewApp(configPath string) (*App, error) {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	logger, err := zap.NewProduction()
+	logFile := config.Server.LogFile
+	if logFile == "" {
+		logFile = "logs/access.log"
+	}
+	if err := os.MkdirAll(filepath.Dir(logFile), 0755); err != nil {
+		return nil, fmt.Errorf("failed to create log directory: %w", err)
+	}
+
+	cfg := zap.NewProductionConfig()
+	cfg.OutputPaths = []string{logFile, "stdout"}
+	cfg.ErrorOutputPaths = []string{logFile, "stderr"}
+	logger, err := cfg.Build()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create logger: %w", err)
+		return nil, fmt.Errorf("failed to build logger: %w", err)
 	}
 
 	var repo domain.LinkRepository

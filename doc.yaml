@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: MeowCut URL Shortener API
+  description: Сервис для укорачивания ссылок
+  version: 1.0.0
+paths:
+  /shorten:
+    post:
+      summary: Создание короткой ссылки
+      description: Принимает оригинальный URL, возвращает короткий идентификатор
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortenRequest'
+      responses:
+        '201':
+          description: Успешно создана короткая ссылка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
+        '400':
+          description: Невалидный URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /{shortId}:
+    get:
+      summary: Получение оригинального URL
+      description: По короткому идентификатору возвращает оригинальный URL
+      parameters:
+        - name: shortId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9_]{10}$'
+          description: Короткий идентификатор ссылки (10 символов)
+      responses:
+        '200':
+          description: Успешно найден оригинальный URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpandResponse'
+        '404':
+          description: Ссылка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Невалидный shortId
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ShortenRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          example: "https://example.com/very/long/url"
+    ShortenResponse:
+      type: object
+      required:
+        - short_url
+      properties:
+        short_url:
+          type: string
+          example: "Abc123_456"
+    ExpandResponse:
+      type: object
+      required:
+        - original_url
+      properties:
+        original_url:
+          type: string
+          format: uri
+          example: "https://example.com/very/long/url"
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "описание ошибки"
